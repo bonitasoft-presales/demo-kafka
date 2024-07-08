@@ -2,7 +2,7 @@
 $PROJECT_FOLDER = (Get-Location).Path + "\.."
 $INFRA_FOLDER = (Get-Location).Path
 $SCA_FOLDER = (Get-Location).Path + "\sca"
-$BONITA_ENVIRONMENT = "showroom"
+$BONITA_ENVIRONMENT = "Qualification"
 
 # Cleanup
 docker-compose -f "$SCA_FOLDER\docker-compose.yml" --env-file "$SCA_FOLDER\.env-local" -p bonita_sca down -v
