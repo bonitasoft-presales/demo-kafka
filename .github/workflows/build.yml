@@ -327,7 +327,7 @@ jobs:
           ./mvnw --batch-mode --no-transfer-progress	 bonita-project:install
           ./mvnw --batch-mode --no-transfer-progress	 clean package \
           -Pdocker \
-          -Dbonita.environment=showroom \
+          -Dbonita.environment=Qualification \
           -Ddocker.baseImageRepository=bonitasoft.jfrog.io/docker-releases/bonita-subscription \
           -Ddocker.imageName=bonita_sca:1.0
 
