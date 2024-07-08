@@ -1,0 +1,42 @@
+name: Build .bos files
+
+on:
+#   push:
+#     branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
+# disabled due to community/enterprise issue when using github actions
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and test archetype
+        run: ./mvnw clean package
+
+
+      - name: Get version from pom
+        id: get-version
+        run: |
+          VERSION=$( ./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout )
+          FINAL_NAME=$( ./mvnw help:evaluate -Dexpression=project.build.finalName -q -DforceStdout )
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=final-name::$FINAL_NAME"
+
+      - name: Display version
+        id: display-version
+        run: |
+          echo "version: ${{ steps.get-version.outputs.version }}"
+          echo "final_name: ${{ steps.get-version.outputs.final-name }}"
+
+# not used for the moment 
+      # - name: Archive BOS files
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: BOS files
+      #     path: target/*.bos
+

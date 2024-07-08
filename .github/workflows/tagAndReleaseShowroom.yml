@@ -1,0 +1,99 @@
+name: Tag and Release
+
+on: workflow_dispatch
+
+jobs:
+  create-tag:
+    name: Create Tag
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Java and Maven - setup settings.xml
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          server-id: github
+          cache: 'maven'
+
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Prepare release
+        run: ./mvnw --batch-mode release:prepare
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+  create-release:
+    name: Create Release
+    needs: create-tag
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Java and Maven
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          server-id: github
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: 'Get Previous tag'
+        id: previous-tag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
+
+      - name: Display tag
+        id: display-tag
+        run: |
+          echo "tag: ${{ steps.previous-tag.outputs.tag }}"
+
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.previous-tag.outputs.tag }}
+
+      - name: Get version from pom
+        id: get-version
+        run: |
+          VERSION=$( ./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout )
+          FINAL_NAME=$(./mvnw help:evaluate -Dexpression=project.build.finalName -q -DforceStdout )
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=final-name::$FINAL_NAME"
+
+      - name: Display version
+        id: display-version
+        run: |
+          echo "version: ${{ steps.get-version.outputs.version }}"
+          echo "final_name: ${{ steps.get-version.outputs.final-name }}"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.previous-tag.outputs.tag }}
+          release_name: ${{ steps.get-version.outputs.final-name }}
+          body: |
+            Content:
+            release ${{ steps.get-version.outputs.final-name }}
+          draft: false
+          prerelease: false
+

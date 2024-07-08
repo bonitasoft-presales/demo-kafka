@@ -1,0 +1,71 @@
+name: Export Localization Keys
+
+on:
+  push:
+    branches:
+      - 'master'
+  workflow_dispatch:
+
+jobs:
+  exportKeys:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Java and Maven - setup settings.xml
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          server-id: github
+          cache: 'maven'
+
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Set repository name
+        id: set-repository-name
+        run: |
+          REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+          echo "::set-output name=repository-name::$REPOSITORY_NAME"
+       
+      - name: display repository name
+        run: |
+          echo "repository-name: ${{ steps.set-repository-name.outputs.repository-name }}"
+
+      - name: Get localization keys jar
+        run: |
+          mkdir -p target/localization/${{ steps.set-repository-name.outputs.repository-name }}
+          curl -L https://github.com/laurentleseigneur/localization-utils/releases/download/localization-utils-0.0.8/localization-utils-0.0.8.jar -o target/localization-utils-0.0.8.jar
+
+      - name: Run export
+        run: |
+          java -jar target/localization-utils-0.0.8.jar /home/runner/work/${{ steps.set-repository-name.outputs.repository-name }}/${{ steps.set-repository-name.outputs.repository-name }} exportKeys
+          cp localization/*.json target/localization/${{ steps.set-repository-name.outputs.repository-name }}
+          echo "target/localization content:"
+          ls -ltr target/localization/${{ steps.set-repository-name.outputs.repository-name }}
+
+      - name: Git status
+        run: |
+          git status
+
+      - name: Pushes to another repository
+        uses: cpina/github-action-push-to-another-repository@v1.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.PAT_CROWDIN }}
+        with:
+          source-directory: "target/localization/${{ steps.set-repository-name.outputs.repository-name }}"
+          destination-github-username: 'bonitasoft-presales'
+          destination-repository-name: 'presales-localization'
+          user-email: actions@github.com
+          target-branch: main
+          target-directory: "${{ steps.set-repository-name.outputs.repository-name }}"
+
+      - uses: EndBug/add-and-commit@v7.5.0
+        name: Commit new keys
+        with:
+          add: '["localization/localization*.json","localization/keyUsage.json"]'
+          message: 'add new localization keys'

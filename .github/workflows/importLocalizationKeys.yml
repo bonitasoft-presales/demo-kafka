@@ -1,0 +1,65 @@
+name: Import Localization Keys
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "15 * * * *"
+
+
+jobs:
+  importTranslation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Java and Maven - setup settings.xml
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          server-id: github
+          cache: 'maven'
+
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Set repository name
+        id: set-repository-name
+        run: |
+          REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+          echo "::set-output name=repository-name::$REPOSITORY_NAME"
+       
+      - name: display repository name
+        run: |
+          echo "repository-name: ${{ steps.set-repository-name.outputs.repository-name }}"
+
+      - name: Get translation files
+        run: |
+          curl -L https://raw.githubusercontent.com/bonitasoft-presales/presales-localization/main/${{ steps.set-repository-name.outputs.repository-name }}/localization_es-ES_crowdin.json -o localization/localization_es-ES.json
+          curl -L https://raw.githubusercontent.com/bonitasoft-presales/presales-localization/main/${{ steps.set-repository-name.outputs.repository-name }}/localization_fr-FR_crowdin.json -o localization/localization_fr-FR.json
+
+      - name: Get localization keys jar
+        run: |
+          mkdir -p target
+          curl -L https://github.com/laurentleseigneur/localization-utils/releases/download/localization-utils-0.0.8/localization-utils-0.0.8.jar -o target/localization-utils-0.0.8.jar
+
+      - name: Run import
+        run: |
+          java -jar target/localization-utils-0.0.8.jar /home/runner/work/${{ steps.set-repository-name.outputs.repository-name }}/${{ steps.set-repository-name.outputs.repository-name }} importKeys
+          echo "localization content:"
+          ls -ltr localization
+
+      - name: Git status
+        run: |
+          cd /home/runner/work/${{ steps.set-repository-name.outputs.repository-name }}/${{ steps.set-repository-name.outputs.repository-name }}
+          git status
+
+      - uses: EndBug/add-and-commit@v7.5.0
+        name: Commit new translations
+        with:
+          add: '**/localization.json'
+          message: 'add new localization translation'
+

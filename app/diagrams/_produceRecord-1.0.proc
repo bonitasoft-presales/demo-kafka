@@ -25,8 +25,9 @@
         </elements>
       </elements>
       <data xmi:type="process:BusinessObjectData" xmi:id="_zJ0EEBQxEe-iWZdHS4twTA" name="record" dataType="_I5pU_hQvEe-iWZdHS4twTA" className="com.company.model.ProducedRecords">
-        <defaultValue xmi:type="expression:Expression" xmi:id="_5zr7FBQxEe-iWZdHS4twTA" name="initRecord()" content="def producedRecordsVar = new com.company.model.ProducedRecords()&#xD;&#xA;producedRecordsVar.topic = recordInput?.topic&#xD;&#xA;producedRecordsVar.recordKey = recordInput?.recordKey&#xD;&#xA;producedRecordsVar.recordValue = recordInput?.recordValue&#xD;&#xA;return producedRecordsVar" interpreter="GROOVY" type="TYPE_READ_ONLY_SCRIPT" returnType="com.company.model.ProducedRecords">
-          <referencedElements xmi:type="process:ContractInput" xmi:id="_5zr7FRQxEe-iWZdHS4twTA" name="recordInput" type="COMPLEX"/>
+        <defaultValue xmi:type="expression:Expression" xmi:id="_5zr7FBQxEe-iWZdHS4twTA" name="initRecord()" content="def producedRecordsVar = new com.company.model.ProducedRecords()&#xD;&#xA;producedRecordsVar.topic = recordInput?.topic&#xD;&#xA;producedRecordsVar.recordKey = recordInput?.recordKey&#xD;&#xA;producedRecordsVar.recordValue = recordInput?.recordValue&#xD;&#xA;producedRecordsVar.messageId = processInstanceId&#xD;&#xA;return producedRecordsVar" interpreter="GROOVY" type="TYPE_READ_ONLY_SCRIPT" returnType="com.company.model.ProducedRecords">
+          <referencedElements xmi:type="process:ContractInput" xmi:id="_LpjAwC-6Ee-xX7zqwRm7zg" name="recordInput" type="COMPLEX"/>
+          <referencedElements xmi:type="expression:Expression" xmi:id="_LpjAwS-6Ee-xX7zqwRm7zg" name="processInstanceId" content="processInstanceId" type="TYPE_ENGINE_CONSTANT" returnType="java.lang.Long"/>
         </defaultValue>
       </data>
       <formMapping xmi:type="process:FormMapping" xmi:id="_I5ot9BQvEe-iWZdHS4twTA">
@@ -55,15 +56,62 @@
             <users xmi:type="actormapping:Users" xmi:id="_30LzZRQvEe-iWZdHS4twTA"/>
           </actorMapping>
         </actorMappings>
-        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_30LMURQvEe-iWZdHS4twTA" id="CONNECTOR"/>
+        <definitionMappings xmi:type="configuration:DefinitionMapping" xmi:id="_zxcdsDiBEe-tCsSmL4jTqQ" type="CONNECTOR" definitionId="connector-kafka-producer" definitionVersion="1.0.0" implementationId="connector-kafka-producer-impl" implementationVersion="1.3"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_30LMURQvEe-iWZdHS4twTA" id="CONNECTOR">
+          <children xmi:type="configuration:FragmentContainer" xmi:id="_zyEv0DiBEe-tCsSmL4jTqQ" id="connector-kafka-producer-impl-1.3">
+            <fragments xmi:type="configuration:Fragment" xmi:id="_zyF98DiBEe-tCsSmL4jTqQ" key="connector-kafka-producer-impl -- 1.3" value="connector-kafka-producer-1.3.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_zyF98TiBEe-tCsSmL4jTqQ" key="connector-kafka-producer-impl -- 1.3" value="kafka-clients-3.4.0.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_zyGlADiBEe-tCsSmL4jTqQ" key="connector-kafka-producer-impl -- 1.3" value="lz4-java-1.8.0.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_zyHMEDiBEe-tCsSmL4jTqQ" key="connector-kafka-producer-impl -- 1.3" value="snappy-java-1.1.8.4.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_zyHzIDiBEe-tCsSmL4jTqQ" key="connector-kafka-producer-impl -- 1.3" value="zstd-jni-1.5.2-1.jar" type="CONNECTOR"/>
+          </children>
+        </processDependencies>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_30LMUhQvEe-iWZdHS4twTA" id="GROOVY_SCRIPT"/>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_30LMUxQvEe-iWZdHS4twTA" id="ACTOR_FILTER"/>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_30LMVBQvEe-iWZdHS4twTA" id="OTHER"/>
         <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_30LMVRQvEe-iWZdHS4twTA" id="GROOVY_SCRIPT"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_flp0wC-4Ee-xX7zqwRm7zg" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_nqcxoC-4Ee-xX7zqwRm7zg" name="kafkaUsername" value="presales.webdemo@bonitasoft.com" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_zyLdgDiBEe-tCsSmL4jTqQ" name="bootstrapServer" value="localhost:29092" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_zyMEkDiBEe-tCsSmL4jTqQ" name="kafkaUser" value="presales.webdemo@bonitasoft.com" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_zyMEkTiBEe-tCsSmL4jTqQ" name="kafkaPassword" value="secret" typeClassname="java.lang.String"/>
+      </configurations>
+      <configurations xmi:type="configuration:Configuration" xmi:id="_6y6QQC-4Ee-xX7zqwRm7zg" name="showroom" version="8" username="walter.bates">
+        <actorMappings xmi:type="actormapping:ActorMappingsType" xmi:id="_6y63UC-4Ee-xX7zqwRm7zg">
+          <actorMapping xmi:type="actormapping:ActorMapping" xmi:id="_6y63US-4Ee-xX7zqwRm7zg" name="Employee actor">
+            <groups xmi:type="actormapping:Groups" xmi:id="_6y63Ui-4Ee-xX7zqwRm7zg"/>
+            <memberships xmi:type="actormapping:Membership" xmi:id="_6y63Uy-4Ee-xX7zqwRm7zg"/>
+            <roles xmi:type="actormapping:Roles" xmi:id="_6y63VC-4Ee-xX7zqwRm7zg">
+              <role>member</role>
+            </roles>
+            <users xmi:type="actormapping:Users" xmi:id="_6y63VS-4Ee-xX7zqwRm7zg"/>
+          </actorMapping>
+        </actorMappings>
+        <definitionMappings xmi:type="configuration:DefinitionMapping" xmi:id="_dM2aQC_MEe-xX7zqwRm7zg" type="CONNECTOR" definitionId="connector-kafka-producer" definitionVersion="1.0.0" implementationId="connector-kafka-producer-impl" implementationVersion="1.2"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_6y6QQi-4Ee-xX7zqwRm7zg" id="CONNECTOR">
+          <children xmi:type="configuration:FragmentContainer" xmi:id="_INnx0C_NEe-xX7zqwRm7zg" id="connector-kafka-producer-impl-1.2">
+            <fragments xmi:type="configuration:Fragment" xmi:id="_INvGkC_NEe-xX7zqwRm7zg" key="connector-kafka-producer-impl -- 1.2" value="connector-kafka-producer-1.2.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_INwUsC_NEe-xX7zqwRm7zg" key="connector-kafka-producer-impl -- 1.2" value="kafka-clients-3.4.0.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_INwUsS_NEe-xX7zqwRm7zg" key="connector-kafka-producer-impl -- 1.2" value="lz4-java-1.8.0.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_INw7wC_NEe-xX7zqwRm7zg" key="connector-kafka-producer-impl -- 1.2" value="snappy-java-1.1.8.4.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_INw7wS_NEe-xX7zqwRm7zg" key="connector-kafka-producer-impl -- 1.2" value="zstd-jni-1.5.2-1.jar" type="CONNECTOR"/>
+          </children>
+        </processDependencies>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_6y6QSS-4Ee-xX7zqwRm7zg" id="GROOVY_SCRIPT"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_6y6QSi-4Ee-xX7zqwRm7zg" id="ACTOR_FILTER"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_6y6QSy-4Ee-xX7zqwRm7zg" id="OTHER"/>
+        <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_6y6QTC-4Ee-xX7zqwRm7zg" id="GROOVY_SCRIPT"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_6y63Vi-4Ee-xX7zqwRm7zg" name="bootstrapServer" value="localhost" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_6y7eYC-4Ee-xX7zqwRm7zg" name="kafkaUser" value="alejandro.rondon" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_6y7eYS-4Ee-xX7zqwRm7zg" name="kafkaPassword" value="secret" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_6y7eYi-4Ee-xX7zqwRm7zg" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_6y7eYy-4Ee-xX7zqwRm7zg" name="kafkaUsername" value="alejandro.rondon" typeClassname="java.lang.String"/>
       </configurations>
       <parameters xmi:type="parameter:Parameter" xmi:id="_8rx0cBQvEe-iWZdHS4twTA" name="bootstrapServer" typeClassname="java.lang.String"/>
       <parameters xmi:type="parameter:Parameter" xmi:id="_9sJsUBQvEe-iWZdHS4twTA" name="kafkaUser" typeClassname="java.lang.String"/>
       <parameters xmi:type="parameter:Parameter" xmi:id="_DTtKsBQwEe-iWZdHS4twTA" name="kafkaPassword" typeClassname="java.lang.String"/>
+      <parameters xmi:type="parameter:Parameter" xmi:id="_fk8qIC-4Ee-xX7zqwRm7zg" name="kafkaServer" typeClassname="java.lang.String"/>
+      <parameters xmi:type="parameter:Parameter" xmi:id="_np9pcC-4Ee-xX7zqwRm7zg" name="kafkaUsername" typeClassname="java.lang.String"/>
       <contract xmi:type="process:Contract" xmi:id="_I5ot_BQvEe-iWZdHS4twTA">
         <inputs xmi:type="process:ContractInput" xmi:id="_5zr7EBQxEe-iWZdHS4twTA" name="recordInput" type="COMPLEX" dataReference="record">
           <inputs xmi:type="process:ContractInput" xmi:id="_5zr7ERQxEe-iWZdHS4twTA" name="topic"/>
@@ -123,7 +171,7 @@
               <children xmi:type="notation:DecorationNode" xmi:id="_NaseQhQvEe-iWZdHS4twTA" type="5025">
                 <layoutConstraint xmi:type="notation:Location" xmi:id="_NaseQxQvEe-iWZdHS4twTA" y="5"/>
               </children>
-              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_NaseQRQvEe-iWZdHS4twTA" x="354" y="70"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_NaseQRQvEe-iWZdHS4twTA" x="517" y="70"/>
             </children>
           </children>
           <styles xmi:type="notation:DescriptionStyle" xmi:id="_I5pVDRQvEe-iWZdHS4twTA"/>

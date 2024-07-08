@@ -1,0 +1,16 @@
+= Generate licence
+
+start a Bonita docker using a valid licence
+
+open a shell inside the container
+
+run:
+
+----
+cd /opt/bonita_lic
+# use licence with correct version and hostname set to "bonita"
+base64 BonitaSubscription-10.0-laurent-docker-bonita-20231024-20301231.lic |tr -d '\n' > base64_v10_licence.txt
+cat base64_v10_licence.txt
+----
+
+then `base64_v10_licence.txt` text value should be copied and set as organisation secret called `LICENCE_V10_BASE64`

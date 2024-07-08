@@ -1,0 +1,146 @@
+{
+  "organization": {
+    "file": "organizations/showroom_2021.xml",
+    "policy": "IGNORE_DUPLICATES"
+  },
+  "profiles": [
+    {
+      "file": "profiles/invoice_manager_profile.xml",
+      "policy": "REPLACE_DUPLICATES"
+    },
+    {
+      "file": "profiles/partner_profile.xml",
+      "policy": "REPLACE_DUPLICATES"
+    }
+  ],
+  "processes": [
+    {
+      "file": "processes/_avatar--2021.09.03.bar",
+      "policy":"IGNORE_DUPLICATES"
+    },
+    {
+      "file": "processes/_createInvoices--1.0.bar"
+    },
+    {
+      "file": "processes/_ProvidersInitialization--1.0.bar"
+    },
+    {
+      "file": "processes/_SetupAllInvoiceReferenceData--1.0.bar"
+    },
+    {
+      "file": "processes/Edit Provider--1.1.bar"
+    },
+    {
+      "file": "processes/EditDeadline--2021.09.06.bar"
+    },
+    {
+      "file": "processes/Invoice Validation--7.14.1.bar"
+    },
+    {
+      "file": "processes/mailTemplate--1.0.bar"
+    },
+    {
+      "file": "processes/mailTemplateInitialValues--1.0.bar"
+    },
+    {
+      "file": "processes/New Provider--1.3.bar"
+    },
+    {
+      "file": "processes/Procurement request--7.12.bar"
+    },
+    {
+      "file": "processes/testInvoices--1.0.bar"
+    },
+    {
+      "file": "processes/_SetupParameters--1.1.bar"
+    }
+  ],
+  "restAPIExtensions": [
+    {
+      "file": "extensions/api-approvetask-1.2.zip"
+    },
+    {
+      "file": "extensions/api-casemanagement-extension-1.0.12.zip"
+    },
+    {
+      "file": "extensions/data-generation-rest-api-1.21.zip"
+    },
+    {
+      "file": "extensions/process-analytic-rest-api-1.8.zip"
+    },
+    {
+      "file": "extensions/api-manage-team-1.1.zip"
+    }
+    
+  ],
+  "pages": [
+    {
+      "file": "pages/page_invoiceMain.zip"
+    },
+    {
+      "file": "pages/page_providerMain.zip"
+    },
+    {
+      "file": "pages/page_dashboard.zip"
+    },
+    {
+      "file": "pages/page_InvoiceDetailPage.zip"
+    },
+    {
+      "file": "pages/page_executeManualTask.zip"
+    },
+    {
+      "file": "pages/page_providerDetailsEdit.zip"
+    },
+    {
+      "file": "pages/page_approveFormPage.zip"
+    },
+    {
+      "file": "pages/page_displayFormPage.zip"
+    },
+    {
+      "file": "pages/page_mainPageProcurement.zip"
+    },
+    {
+      "file": "pages/page_invoiceDeadlinesMain.zip"
+    },
+ 	{
+      "file": "pages/page_PACaseVisuPage.zip"
+    },
+ 	{
+      "file": "pages/page_parameterSetupInst.zip"
+    }
+  ],
+  "layouts": [
+    {
+      "file": "pages/layout_BonitaPresalesHorizontalLayoutV9.zip"
+    },
+    {
+      "file": "pages/layout_BonitaPresalesVerticalLayoutV9.zip"
+    }
+    
+  ],
+  "themes": [
+      {
+        "file": "themes/theme-invoicemanagement-1.0.5.zip"
+      }
+    ],
+  "applications": [
+    {
+      "file": "applications/invoiceBackOffice.xml",
+      "policy": "REPLACE_DUPLICATES"
+    },
+    {
+      "file": "applications/InvoiceManagement.xml",
+      "policy": "REPLACE_DUPLICATES"
+    },
+    {
+      "file": "applications/ProcurementManagement.xml",
+      "policy": "REPLACE_DUPLICATES"
+    },
+    {
+      "file": "applications/parametersUpdate.xml",
+      "policy": "REPLACE_DUPLICATES"
+    }
+  ]  
+}

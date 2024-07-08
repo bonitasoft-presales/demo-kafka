@@ -1,0 +1,123 @@
+services:
+  bonita-db:
+    hostname: bonita-db
+    #image: bonitasoft/bonita-postgres:latest
+    image: bonitasoft/bonita-postgres:${POSTGRESQL_VERSION}
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+    networks:
+      - docker_bonita_backend
+  
+  bonita:
+    image: ${BONITA_PROJECT_NAME}:${BONITA_PROJECT_VERSION}
+    hostname: bonita
+    volumes:
+      - ${LIC_FOLDER}:/opt/bonita_lic/
+      - ${BONITA_DATA}/log4j2:/opt/bonita/conf/logs
+    ports:
+      - ${BONITA_EXPOSED_PORT}:8080
+      #- 8090:8080
+    environment:
+      - POSTGRES_ENV_POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+      - DB_VENDOR=postgres
+      - DB_HOST=bonita-db
+      - BONITA_RUNTIME_ADMIN_USERNAME=install
+      - BONITA_RUNTIME_ADMIN_PASSWORD=install
+      - MONITORING_USERNAME=monitoring
+      - MONITORING_PASSWORD=mon1tor1ng_adm1n
+      - PLATFORM_LOGIN=pfadmin
+      - PLATFORM_PASSWORD=pfsecret
+      - JMX_REMOTE_ACCESS=false
+      - DB_PORT=5432
+      - DB_NAME=bonita
+      - DB_USER=bonita
+      - DB_PASS=bpm
+      - BIZ_DB_NAME=business_data
+      - BIZ_DB_USER=business_data
+      - BIZ_DB_PASS=bpm
+      - CLUSTER_MODE=false
+      - JAVA_OPTS=-Xms512m -Xmx3000m
+      - BONITA_EXPOSED_PORT=${BONITA_EXPOSED_PORT}
+      - EC2_PUBLIC_HOSTNAME=${EC2_PUBLIC_HOSTNAME}
+    restart: always
+    depends_on:
+      bonita-db:
+        condition:
+          service_healthy
+    networks:
+      - docker_bonita_backend
+        
+  greenmail:
+    image: greenmail/standalone:1.6.0
+    hostname: greenmail
+    ports:
+      - 2525:3025
+      - 3110:3110
+      - 3143:3143
+      - 3465:3465
+      - 3993:3993
+      - 3995:3995
+    restart: always
+    networks:
+      - docker_bonita_backend
+
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    hostname: roundcube
+    environment:
+      - ROUNDCUBEMAIL_SMTP_SERVER=greenmail
+      - ROUNDCUBEMAIL_SMTP_PORT=3025
+      - ROUNDCUBEMAIL_DEFAULT_HOST=greenmail
+      - ROUNDCUBEMAIL_DEFAULT_PORT=3143
+    ports:
+      - ${ROUNDCUBE_EXPOSED_PORT}:80
+    depends_on:
+      - greenmail
+    restart: always
+    networks:
+      - docker_bonita_backend
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - docker_bonita_backend
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - docker_bonita_backend
+  
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      KAFKA_CLUSTERS_0_NAME: Bonita
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    networks:
+      - docker_bonita_backend
+
+networks:
+  docker_bonita_backend:
+    name: docker_bonita_backend

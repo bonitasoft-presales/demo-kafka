@@ -13,11 +13,11 @@
           <dynamicDescription xmi:type="expression:Expression" xmi:id="_TZNrIBQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
           <stepSummary xmi:type="expression:Expression" xmi:id="_TZNrIhQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
         </elements>
-        <elements xmi:type="process:ServiceTask" xmi:id="_UPUzwBQvEe-iWZdHS4twTA" name="Consume Record" outgoing="_TZOSMhQvEe-iWZdHS4twTA" incoming="_Sk1A6BQvEe-iWZdHS4twTA" type="STANDARD">
+        <elements xmi:type="process:ServiceTask" xmi:id="_UPUzwBQvEe-iWZdHS4twTA" name="Consume Record" outgoing="_TZOSMhQvEe-iWZdHS4twTA" incoming="_Sk1A6BQvEe-iWZdHS4twTA" type="STANDARD" testBefore="true">
           <dynamicLabel xmi:type="expression:Expression" xmi:id="_Sk1A2BQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
           <dynamicDescription xmi:type="expression:Expression" xmi:id="_Sk1A2RQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
           <stepSummary xmi:type="expression:Expression" xmi:id="_Sk1A2hQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
-          <loopCondition xmi:type="expression:Expression" xmi:id="_Sk1A2xQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Boolean" returnTypeFixed="true"/>
+          <loopCondition xmi:type="expression:Expression" xmi:id="_Sk1A2xQvEe-iWZdHS4twTA" name="true" content="true" returnType="java.lang.Boolean" returnTypeFixed="true"/>
           <loopMaximum xmi:type="expression:Expression" xmi:id="_Sk1A3BQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Integer" returnTypeFixed="true"/>
           <cardinalityExpression xmi:type="expression:Expression" xmi:id="_Sk1A3RQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Integer" returnTypeFixed="true"/>
           <iteratorExpression xmi:type="expression:Expression" xmi:id="_Sk1A3hQvEe-iWZdHS4twTA" name="multiInstanceIterator" content="multiInstanceIterator" type="MULTIINSTANCE_ITERATOR_TYPE" returnType="java.lang.Object" returnTypeFixed="true"/>
@@ -32,7 +32,7 @@
           <cardinalityExpression xmi:type="expression:Expression" xmi:id="_VnoDdhQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Integer" returnTypeFixed="true"/>
           <iteratorExpression xmi:type="expression:Expression" xmi:id="_VnoDeBQvEe-iWZdHS4twTA" name="multiInstanceIterator" content="multiInstanceIterator" type="MULTIINSTANCE_ITERATOR_TYPE" returnType="java.lang.Object" returnTypeFixed="true"/>
           <completionCondition xmi:type="expression:Expression" xmi:id="_VnoDdxQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Boolean" returnTypeFixed="true"/>
-          <formMapping xmi:type="process:FormMapping" xmi:id="_VnoDehQvEe-iWZdHS4twTA">
+          <formMapping xmi:type="process:FormMapping" xmi:id="_VnoDehQvEe-iWZdHS4twTA" type="NONE">
             <targetForm xmi:type="expression:Expression" xmi:id="_VnoDexQvEe-iWZdHS4twTA" name="" content="" type="FORM_REFERENCE_TYPE" returnTypeFixed="true"/>
           </formMapping>
           <contract xmi:type="process:Contract" xmi:id="_VnoDeRQvEe-iWZdHS4twTA"/>

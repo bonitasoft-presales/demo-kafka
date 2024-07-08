@@ -16,6 +16,7 @@
                 <field type="STRING" length="255" name="topic" nullable="true" collection="false"/>
                 <field type="STRING" length="255" name="recordKey" nullable="true" collection="false"/>
                 <field type="STRING" length="255" name="recordValue" nullable="true" collection="false"/>
+                <field type="LONG" length="255" name="messageId" nullable="true" collection="false"/>
             </fields>
             <uniqueConstraints/>
             <queries/>

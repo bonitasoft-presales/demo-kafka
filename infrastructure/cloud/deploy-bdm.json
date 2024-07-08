@@ -1,0 +1,15 @@
+{
+  "organization": {
+    "file": "organizations/showroom_2021.xml",
+    "policy": "IGNORE_DUPLICATES"
+  },
+  "businessDataModel": {
+    "file": "bdm/bdm.zip"
+  },
+  "profiles": [
+    {
+      "file": "profiles/default_profile.xml",
+      "policy": "REPLACE_DUPLICATES"
+    }
+  ]
+}

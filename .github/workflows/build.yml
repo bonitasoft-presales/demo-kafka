@@ -1,0 +1,605 @@
+name: build
+on:
+  push:
+    branches:
+      - develop
+      - master
+      - main
+  pull_request:
+    branches:
+      - develop
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  create_server:
+    runs-on: ubuntu-latest
+    outputs:
+        awsPublicDns: ${{ steps.read-yaml.outputs.publicDnsName }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Setup maven private repositories
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          repositories: >
+            [
+              {
+                "id": "bar",
+                "name": "Bonita Artifact Repository",
+                "url": "https://bonitasoft.jfrog.io/artifactory/releases",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "false"
+                }
+              },
+              {
+                "id": "github-presales",
+                "name": "github-presales",
+                "url": "https://maven.pkg.github.com/bonitasoft-presales/*",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "true"
+                }
+              },
+              {
+                "id": "github-laurent",
+                "name": "github-presales",
+                "url": "https://maven.pkg.github.com/laurentleseigneur/*",
+                "releases": {
+                 "enabled": "true"
+                },
+                "snapshots": {
+                 "enabled": "true"
+                }
+              }
+            ]
+          plugin_repositories: >
+            [
+              {
+                "id": "bar",
+                "name": "Bonita Artifact Repository",
+                "url": "https://bonitasoft.jfrog.io/artifactory/releases",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "false"
+                }
+              }
+            ]
+          servers: >
+            [
+              {
+                "id": "bar",
+                "username": "${{ secrets.JFROG_USER }}",
+                "password": "${{ secrets.JFROG_TOKEN }}"
+              },
+              {
+                "id": "github-presales",
+                "username": "${{ secrets.GHP_USER }}",
+                "password": "${{ secrets.GHP_TOKEN }}"
+              },
+              {
+                "id": "github-laurent",
+                "username": "${{ secrets.GHP_USER }}",
+                "password": "${{ secrets.GHP_TOKEN }}"
+              }
+            ]
+      
+
+      - name: Create AWS config credential folder
+        run: |
+          mkdir -p /home/runner/.aws
+          ls -ltr /home/runner/.aws
+
+      - name: Create AWS config region file
+        uses: 1arp/create-a-file-action@0.4.5
+        with:
+          path: '/home/runner/.aws'
+          isAbsolutePath: true
+          file: 'config'
+          content: |
+            [default]
+            region = eu-west-1
+
+      - name: Create AWS config credential file
+        uses: 1arp/create-a-file-action@0.4.5
+        with:
+          path: '/home/runner/.aws'
+          isAbsolutePath: true
+          file: 'credentials'
+          content: |
+            [default]
+            aws_access_key_id = ${{ secrets.AWS_KEY_ID }}
+            aws_secret_access_key = ${{ secrets.AWS_ACCESS_KEY }}
+            region = eu-west-1
+
+      - name: Set AWS stack ID
+        id: aws_stack_id
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          modifiedRepo=$(echo ${REPO_NAME} | sed 's/\//-/g')
+          modifiedBranch=$(echo ${{ github.ref_name }} | sed 's/\//-/g')
+          stackId="${modifiedRepo}_${modifiedBranch}"
+          echo "stackId: ${stackId}"
+          echo "stackId=${stackId}" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Create AWS server
+        run: |
+          bonitaAwsVersion="1.8"
+          keyName="presale-ci-eu-west-1"
+          securityGroup="bonitasoft_presales"
+          bonitaEnvironment="integration"
+          # ubuntu server 2024.04 LTS x86
+          amiId="ami-0776c814353b4814d"
+          #instance type 
+          instanceType="t2.medium"
+          diskSize="20"
+
+          # get aws presales lib
+          ./mvnw --batch-mode --no-transfer-progress dependency:copy -Dartifact=com.bonitasoft.presales.aws:bonita-aws:${bonitaAwsVersion}:jar:jar-with-dependencies -DoutputDirectory=.
+          # create server 
+          java -jar bonita-aws-${bonitaAwsVersion}-jar-with-dependencies.jar \
+          -c create \
+          --stack-id ${{ steps.aws_stack_id.outputs.stackId }} \
+          --name ${{ steps.aws_stack_id.outputs.stackId }} \
+          --key-name ${keyName} \
+          --security-group ${securityGroup} \
+          --ami-id ${amiId} \
+          --instance-type=${instanceType} \
+          --disk-size ${diskSize}
+
+      - name: Copy aws yaml file
+        run: |
+          ls -ltr ${{ github.workspace }}/${{ steps.aws_stack_id.outputs.stackId }}.yaml
+          cp ${{ github.workspace }}/${{ steps.aws_stack_id.outputs.stackId }}.yaml ${{ github.workspace }}/aws_instance.yaml
+          ls -ltr ${{ github.workspace }}/aws_instance.yaml
+
+      - name: read-yaml-file
+        uses: pietrobolcato/action-read-yaml@1.1.0
+        id: read-yaml
+        with:
+          config: ${{ github.workspace }}/aws_instance.yaml
+
+      - name: Display read-yaml output
+        id: read_yaml
+        run: |
+          echo "publicDnsName=${{ steps.read-yaml.outputs['publicDnsName'] }}" >> $GITHUB_ENV 
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - uses: passeidireto/aws-add-ip-to-security-group-action@v1.0.0
+        with:
+          aws_security_group_ids: ${{ secrets.AWS_SECURITY_GROUP_ID }}
+          port_range: '22'
+
+      - name: setup SSH private key
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+
+      - name: install Docker
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              sudo apt-get update
+              sudo apt-get install docker.io -y
+              sudo systemctl enable docker
+              sudo docker --version
+          '
+        env:
+          HOSTNAME: ${{ steps.read-yaml.outputs.publicDnsName}}
+
+      - name: install Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              sudo apt-get update
+              sudo apt-get install ca-certificates curl -y
+              sudo install -m 0755 -d /etc/apt/keyrings
+              sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+              sudo chmod a+r /etc/apt/keyrings/docker.asc
+              echo \
+              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+              $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install docker-compose-plugin -y
+              sudo docker compose version
+          '
+        env:
+          HOSTNAME: ${{ steps.read-yaml.outputs['publicDnsName'] }}
+  build_SCA:
+    needs:
+      - create_server
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Setup maven private repositories
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          repositories: >
+            [
+              {
+                "id": "bar",
+                "name": "Bonita Artifact Repository",
+                "url": "https://bonitasoft.jfrog.io/artifactory/releases",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "false"
+                }
+              },
+              {
+                "id": "github-presales",
+                "name": "github-presales",
+                "url": "https://maven.pkg.github.com/bonitasoft-presales/*",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "true"
+                }
+              },
+              {
+                "id": "github-laurent",
+                "name": "github-presales",
+                "url": "https://maven.pkg.github.com/laurentleseigneur/*",
+                "releases": {
+                 "enabled": "true"
+                },
+                "snapshots": {
+                 "enabled": "true"
+                }
+              }
+            ]
+          plugin_repositories: >
+            [
+              {
+                "id": "bar",
+                "name": "Bonita Artifact Repository",
+                "url": "https://bonitasoft.jfrog.io/artifactory/releases",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "false"
+                }
+              }
+            ]
+          servers: >
+            [
+              {
+                "id": "bar",
+                "username": "${{ secrets.JFROG_USER }}",
+                "password": "${{ secrets.JFROG_TOKEN }}"
+              },
+              {
+                "id": "github-presales",
+                "username": "${{ secrets.GHP_USER }}",
+                "password": "${{ secrets.GHP_TOKEN }}"
+              },
+              {
+                "id": "github-laurent",
+                "username": "${{ secrets.GHP_USER }}",
+                "password": "${{ secrets.GHP_TOKEN }}"
+              }
+            ]
+
+      - name: Login to Jfrog
+        run: docker login https://bonitasoft.jfrog.io -u ${{ secrets.JFROG_USER }} -p ${{ secrets.JFROG_TOKEN }}
+
+      - name: Build Docker SCA image
+        # docker.baseImageRepository isrequired when using bonitasoft tokens instead of customer tokens
+        run: |
+          ./mvnw --batch-mode --no-transfer-progress	 bonita-project:install
+          ./mvnw --batch-mode --no-transfer-progress	 clean package \
+          -Pdocker \
+          -Dbonita.environment=showroom \
+          -Ddocker.baseImageRepository=bonitasoft.jfrog.io/docker-releases/bonita-subscription \
+          -Ddocker.imageName=bonita_sca:1.0
+
+      - name: Logout from Jfrog
+        run: docker logout https://bonitasoft.jfrog.io
+
+      - name: Log docker image build
+        run: |
+          docker images bonita_sca
+          docker save --output bonita_sca.tar bonita_sca:1.0
+          ls -ltr bonita_sca.tar
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - uses: passeidireto/aws-add-ip-to-security-group-action@v1.0.0
+        with:
+          aws_security_group_ids: ${{ secrets.AWS_SECURITY_GROUP_ID }}
+          port_range: '22'
+
+      - name: Setup SSH private key
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+
+      - name: Transfer Docker Data
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              rm -rf ~/sca
+              mkdir -p ~/sca
+          '
+          scp -o StrictHostKeyChecking=no -i private_key bonita_sca.tar ${{ secrets.AWS_SSH_USER }}@${HOSTNAME}:~/bonita_sca.tar
+          scp -o StrictHostKeyChecking=no -i private_key -r infrastructure/sca ${{ secrets.AWS_SSH_USER }}@${HOSTNAME}:~
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+  deploy_SCA:
+    needs:
+      - create_server
+      - build_SCA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract licence
+        run: |
+          echo "${{ secrets.LICENCE_V10_BASE64 }}" | base64 --decode > ${{ github.workspace }}/bonita.lic
+
+      - name: Check licence
+        run: |
+          ls -ltr ${{ github.workspace }}/bonita.lic
+
+      - name: Setup SSH private key
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - uses: passeidireto/aws-add-ip-to-security-group-action@v1.0.0
+        with:
+          aws_security_group_ids: ${{ secrets.AWS_SECURITY_GROUP_ID }}
+          port_range: '22'
+
+      - name: Transfer licence
+        run: |
+          scp -o StrictHostKeyChecking=no -i private_key ${{ github.workspace }}/bonita.lic ${{ secrets.AWS_SSH_USER }}@${HOSTNAME}:~/bonita.lic
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: Verify licence file
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              mkdir -p ~/sca/bonita_data_lic
+              sudo chown -R ubuntu:ubuntu ~/sca/bonita_data_lic
+              cp ~/bonita.lic ~/sca/bonita_data_lic
+              ls -ltr ~/sca/bonita_data_lic
+          '
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: Stop docker compose
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              sudo docker compose -f /home/ubuntu/sca/docker-compose.yml --env-file /home/ubuntu/sca/.env -p bonita_sca down -v
+              sudo docker image rm bonita_sca:1.0
+              sudo docker system prune --force --volumes
+              df -h
+              sudo docker images
+          '
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: Configure env file for docker compose
+        run: |
+          echo "EC2_HOSTNAME=${HOSTNAME}" > ${{ github.workspace }}/ec2.properties
+          cat ${{ github.workspace }}/ec2.properties
+          scp -o StrictHostKeyChecking=no -i private_key ${{ github.workspace }}/ec2.properties ${{ secrets.AWS_SSH_USER }}@${HOSTNAME}:~/ec2.properties
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              source ~/ec2.properties
+              echo "ec2 hostname: ${EC2_HOSTNAME}"
+              echo "env file before sed:"
+              cat /home/ubuntu/sca/.env
+              sed -i "s/{EC2_PUBLIC_HOSTNAME}/${EC2_HOSTNAME}/g" /home/ubuntu/sca/.env
+              echo "env file after sed:"
+              cat /home/ubuntu/sca/.env
+          '
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: Start docker compose
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              sudo docker image load -i ~/bonita_sca.tar
+              sudo docker images
+              sudo docker compose -f /home/ubuntu/sca/docker-compose.yml --env-file /home/ubuntu/sca/.env -p bonita_sca up -d
+          '
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: Check HTTP status
+#        uses: gerdemann/http-status-code@1.1.1
+        uses: laurentleseigneur/http-status-code@main
+        with:
+          url: "http://${HOSTNAME}:8081/bonita/healthz"
+          code: 200
+          timeout: 360
+          interval: 5
+          username: ${{ secrets.HEALTHZ_USERNAME }}
+          password: ${{ secrets.HEALTHZ_PASSWORD }}
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: Display docker logs
+        if: always()
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.AWS_SSH_USER }}@${HOSTNAME} '
+              sudo docker ps
+              sudo docker logs bonita_sca-bonita-1
+          '
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+
+  check_IT_folder:
+    runs-on: ubuntu-latest
+    outputs:
+      folder_exists: ${{ steps.check-dir.outputs.exists }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for folder
+        id: check-dir
+        run: |
+          if [ -d "IT" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Log output
+        run: |
+          echo "folder_exists: [${{ steps.check-dir.outputs.exists }}]"
+
+  run-IT:
+    needs:
+      - check_IT_folder
+      - deploy_SCA
+      - create_server
+    runs-on: ubuntu-latest
+    if: needs.check_IT_folder.outputs.folder_exists == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Setup maven private repositories
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          repositories: >
+            [
+              {
+                "id": "bar",
+                "name": "Bonita Artifact Repository",
+                "url": "https://bonitasoft.jfrog.io/artifactory/releases",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "false"
+                }
+              },
+              {
+                "id": "github-presales",
+                "name": "github-presales",
+                "url": "https://maven.pkg.github.com/bonitasoft-presales/*",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "true"
+                }
+              },
+              {
+                "id": "github-laurent",
+                "name": "github-presales",
+                "url": "https://maven.pkg.github.com/laurentleseigneur/*",
+                "releases": {
+                 "enabled": "true"
+                },
+                "snapshots": {
+                 "enabled": "true"
+                }
+              }
+            ]
+          plugin_repositories: >
+            [
+              {
+                "id": "bar",
+                "name": "Bonita Artifact Repository",
+                "url": "https://bonitasoft.jfrog.io/artifactory/releases",
+                "releases": {
+                  "enabled": "true"
+                },
+                "snapshots": {
+                  "enabled": "false"
+                }
+              }
+            ]
+          servers: >
+            [
+              {
+                "id": "bar",
+                "username": "${{ secrets.JFROG_USER }}",
+                "password": "${{ secrets.JFROG_TOKEN }}"
+              },
+              {
+                "id": "github-presales",
+                "username": "${{ secrets.GHP_USER }}",
+                "password": "${{ secrets.GHP_TOKEN }}"
+              },
+              {
+                "id": "github-laurent",
+                "username": "${{ secrets.GHP_USER }}",
+                "password": "${{ secrets.GHP_TOKEN }}"
+              }
+            ]
+
+      - name: run integration test
+        run: |
+          echo "Integration test using Bonita test toolkit"
+          ./mvnw --batch-mode --no-transfer-progress clean verify -f IT/pom.xml -Dbonita.url=http://${HOSTNAME}:8081/bonita
+        env:
+          HOSTNAME: ${{ needs.create_server.outputs.awsPublicDns }}
+
+      - name: publish BTT reports
+        run: |
+          echo "TODO publish Bonita test toolkit report"
