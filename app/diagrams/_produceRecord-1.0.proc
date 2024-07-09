@@ -158,6 +158,37 @@
         <parameters xmi:type="parameter:Parameter" xmi:id="_6y7eYi-4Ee-xX7zqwRm7zg" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_6y7eYy-4Ee-xX7zqwRm7zg" name="kafkaUsername" value="alejandro.rondon" typeClassname="java.lang.String"/>
       </configurations>
+      <configurations xmi:type="configuration:Configuration" xmi:id="_kdbEUD4DEe-DWY8YJtlaqA" name="presales" version="8" username="walter.bates">
+        <actorMappings xmi:type="actormapping:ActorMappingsType" xmi:id="_kdbEUT4DEe-DWY8YJtlaqA">
+          <actorMapping xmi:type="actormapping:ActorMapping" xmi:id="_kdbEUj4DEe-DWY8YJtlaqA" name="Employee actor">
+            <groups xmi:type="actormapping:Groups" xmi:id="_kdbEUz4DEe-DWY8YJtlaqA"/>
+            <memberships xmi:type="actormapping:Membership" xmi:id="_kdbEVD4DEe-DWY8YJtlaqA"/>
+            <roles xmi:type="actormapping:Roles" xmi:id="_kdbEVT4DEe-DWY8YJtlaqA">
+              <role>member</role>
+            </roles>
+            <users xmi:type="actormapping:Users" xmi:id="_kdbEVj4DEe-DWY8YJtlaqA"/>
+          </actorMapping>
+        </actorMappings>
+        <definitionMappings xmi:type="configuration:DefinitionMapping" xmi:id="_kdbEVz4DEe-DWY8YJtlaqA" type="CONNECTOR" definitionId="connector-kafka-producer" definitionVersion="1.0.0" implementationId="connector-kafka-producer-impl" implementationVersion="1.6"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kdbEWD4DEe-DWY8YJtlaqA" id="CONNECTOR">
+          <children xmi:type="configuration:FragmentContainer" xmi:id="_nsBHQD4DEe-DWY8YJtlaqA" id="connector-kafka-producer-impl-1.6">
+            <fragments xmi:type="configuration:Fragment" xmi:id="_nsBHQT4DEe-DWY8YJtlaqA" key="connector-kafka-producer-impl -- 1.6" value="connector-kafka-1.6.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_nsExoD4DEe-DWY8YJtlaqA" key="connector-kafka-producer-impl -- 1.6" value="kafka-clients-3.7.1.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_nsFYsD4DEe-DWY8YJtlaqA" key="connector-kafka-producer-impl -- 1.6" value="lz4-java-1.8.0.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_nsFYsT4DEe-DWY8YJtlaqA" key="connector-kafka-producer-impl -- 1.6" value="snappy-java-1.1.10.5.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_nsF_wD4DEe-DWY8YJtlaqA" key="connector-kafka-producer-impl -- 1.6" value="zstd-jni-1.5.6-3.jar" type="CONNECTOR"/>
+          </children>
+        </processDependencies>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kdbEXz4DEe-DWY8YJtlaqA" id="GROOVY_SCRIPT"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kdbEYD4DEe-DWY8YJtlaqA" id="ACTOR_FILTER"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kdbEYT4DEe-DWY8YJtlaqA" id="OTHER"/>
+        <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kdbEYj4DEe-DWY8YJtlaqA" id="GROOVY_SCRIPT"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEYz4DEe-DWY8YJtlaqA" name="kafkaUser" value="kafka" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZD4DEe-DWY8YJtlaqA" name="kafkaPassword" value="secret" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZT4DEe-DWY8YJtlaqA" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZj4DEe-DWY8YJtlaqA" name="kafkaUsername" value="secret" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZz4DEe-DWY8YJtlaqA" name="kafkaTimeout" value="10000" typeClassname="java.lang.Integer"/>
+      </configurations>
       <parameters xmi:type="parameter:Parameter" xmi:id="_9sJsUBQvEe-iWZdHS4twTA" name="kafkaUser" typeClassname="java.lang.String"/>
       <parameters xmi:type="parameter:Parameter" xmi:id="_DTtKsBQwEe-iWZdHS4twTA" name="kafkaPassword" typeClassname="java.lang.String"/>
       <parameters xmi:type="parameter:Parameter" xmi:id="_fk8qIC-4Ee-xX7zqwRm7zg" name="kafkaServer" typeClassname="java.lang.String"/>
