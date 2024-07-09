@@ -88,10 +88,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.bonitasoft</groupId>
-      <artifactId>connector-kafka-producer</artifactId>
-      <version>1.2</version>
+      <groupId>com.bonitasoft.presales.connector</groupId>
+      <artifactId>connector-kafka</artifactId>
+      <version>1.6</version>
     </dependency>
+    
+    
+    
+    
     
     
     

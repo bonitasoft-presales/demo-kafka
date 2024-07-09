@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:actormapping="http://www.bonitasoft.org/ns/actormapping/6.0" xmlns:configuration="http://www.bonitasoft.org/ns/bpm/configuration" xmlns:decision="http://www.bonitasoft.org/ns/bpm/process/decision" xmlns:expression="http://www.bonitasoft.org/ns/bpm/expression" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.3/notation" xmlns:parameter="http://www.bonitasoft.org/ns/bpm/parameter" xmlns:process="http://www.bonitasoft.org/ns/bpm/process">
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:actormapping="http://www.bonitasoft.org/ns/actormapping/6.0" xmlns:configuration="http://www.bonitasoft.org/ns/bpm/configuration" xmlns:connectorconfiguration="http://www.bonitasoft.org/model/connector/configuration" xmlns:decision="http://www.bonitasoft.org/ns/bpm/process/decision" xmlns:definition="http://www.bonitasoft.org/ns/connector/definition/6.1" xmlns:expression="http://www.bonitasoft.org/ns/bpm/expression" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.3/notation" xmlns:parameter="http://www.bonitasoft.org/ns/bpm/parameter" xmlns:process="http://www.bonitasoft.org/ns/bpm/process">
   <process:MainProcess xmi:id="_Sk1A0BQvEe-iWZdHS4twTA" name="_consumeRecord" bonitaModelVersion="8">
     <elements xmi:type="process:Pool" xmi:id="_Sk1A0RQvEe-iWZdHS4twTA" name="_consumeRecord">
       <elements xmi:type="process:Lane" xmi:id="_Sk1A0hQvEe-iWZdHS4twTA" name="Employee lane" actor="_Sk1A6xQvEe-iWZdHS4twTA">
@@ -13,10 +13,51 @@
           <dynamicDescription xmi:type="expression:Expression" xmi:id="_TZNrIBQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
           <stepSummary xmi:type="expression:Expression" xmi:id="_TZNrIhQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
         </elements>
-        <elements xmi:type="process:ServiceTask" xmi:id="_UPUzwBQvEe-iWZdHS4twTA" name="Consume Record" outgoing="_TZOSMhQvEe-iWZdHS4twTA" incoming="_Sk1A6BQvEe-iWZdHS4twTA" type="STANDARD" testBefore="true">
+        <elements xmi:type="process:ServiceTask" xmi:id="_UPUzwBQvEe-iWZdHS4twTA" name="Consume Record" outgoing="_TZOSMhQvEe-iWZdHS4twTA" incoming="_Sk1A6BQvEe-iWZdHS4twTA" testBefore="true">
           <dynamicLabel xmi:type="expression:Expression" xmi:id="_Sk1A2BQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
           <dynamicDescription xmi:type="expression:Expression" xmi:id="_Sk1A2RQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
           <stepSummary xmi:type="expression:Expression" xmi:id="_Sk1A2hQvEe-iWZdHS4twTA" name="" content="" returnTypeFixed="true"/>
+          <connectors xmi:type="process:Connector" xmi:id="_fVbKYD3wEe-DWY8YJtlaqA" name="consume" definitionId="connector-kafka-consumer" event="ON_ENTER" definitionVersion="1.0.0">
+            <configuration xmi:type="connectorconfiguration:ConnectorConfiguration" xmi:id="_fVc_kD3wEe-DWY8YJtlaqA" definitionId="connector-kafka-consumer" version="1.0.0" modelVersion="8">
+              <parameters xmi:type="connectorconfiguration:ConnectorParameter" xmi:id="_fVc_kT3wEe-DWY8YJtlaqA" key="kafkaServers">
+                <expression xmi:type="expression:Expression" xmi:id="_fVc_kj3wEe-DWY8YJtlaqA" name="kafkaServer" content="kafkaServer" type="TYPE_PARAMETER" returnTypeFixed="true">
+                  <referencedElements xmi:type="parameter:Parameter" xmi:id="_fVdmoD3wEe-DWY8YJtlaqA" name="kafkaServer" typeClassname="java.lang.String"/>
+                </expression>
+              </parameters>
+              <parameters xmi:type="connectorconfiguration:ConnectorParameter" xmi:id="_fVdmoT3wEe-DWY8YJtlaqA" key="kafkaGroupId">
+                <expression xmi:type="expression:Expression" xmi:id="_fVdmoj3wEe-DWY8YJtlaqA" name="bonita-group" content="bonita-group" returnTypeFixed="true"/>
+              </parameters>
+              <parameters xmi:type="connectorconfiguration:ConnectorParameter" xmi:id="_fVdmoz3wEe-DWY8YJtlaqA" key="kafkaUser">
+                <expression xmi:type="expression:Expression" xmi:id="_fVdmpD3wEe-DWY8YJtlaqA" name="kafkaUser" content="kafkaUser" type="TYPE_PARAMETER" returnTypeFixed="true">
+                  <referencedElements xmi:type="parameter:Parameter" xmi:id="_fVdmpT3wEe-DWY8YJtlaqA" name="kafkaUser" typeClassname="java.lang.String"/>
+                </expression>
+              </parameters>
+              <parameters xmi:type="connectorconfiguration:ConnectorParameter" xmi:id="_fVdmpj3wEe-DWY8YJtlaqA" key="kafkaPassword">
+                <expression xmi:type="expression:Expression" xmi:id="_fVdmpz3wEe-DWY8YJtlaqA" name="kafkaPassword" content="kafkaPassword" type="TYPE_PARAMETER" returnTypeFixed="true">
+                  <referencedElements xmi:type="parameter:Parameter" xmi:id="_fVdmqD3wEe-DWY8YJtlaqA" name="kafkaPassword" typeClassname="java.lang.String"/>
+                </expression>
+              </parameters>
+              <parameters xmi:type="connectorconfiguration:ConnectorParameter" xmi:id="_fVdmqT3wEe-DWY8YJtlaqA" key="kafkaTopic">
+                <expression xmi:type="expression:Expression" xmi:id="_fVdmqj3wEe-DWY8YJtlaqA" name="consumeTopic" content="consumeTopic" type="TYPE_VARIABLE" returnTypeFixed="true">
+                  <referencedElements xmi:type="process:Data" xmi:id="_fVdmqz3wEe-DWY8YJtlaqA" name="consumeTopic" dataType="_Sk1BARQvEe-iWZdHS4twTA"/>
+                </expression>
+              </parameters>
+              <parameters xmi:type="connectorconfiguration:ConnectorParameter" xmi:id="_fVdmrD3wEe-DWY8YJtlaqA" key="kafkaTimeout">
+                <expression xmi:type="expression:Expression" xmi:id="_fVdmrT3wEe-DWY8YJtlaqA" name="kafkaTimeout" content="kafkaTimeout" type="TYPE_PARAMETER" returnType="java.lang.Integer" returnTypeFixed="true">
+                  <referencedElements xmi:type="parameter:Parameter" xmi:id="_fVdmrj3wEe-DWY8YJtlaqA" name="kafkaTimeout" typeClassname="java.lang.Integer"/>
+                </expression>
+              </parameters>
+            </configuration>
+            <outputs xmi:type="expression:Operation" xmi:id="_fVdmrz3wEe-DWY8YJtlaqA">
+              <leftOperand xmi:type="expression:Expression" xmi:id="_fVdmsD3wEe-DWY8YJtlaqA" name="records" content="records" type="TYPE_VARIABLE" returnType="java.util.List">
+                <referencedElements xmi:type="process:BusinessObjectData" xmi:id="_fVdmsT3wEe-DWY8YJtlaqA" name="records" multiple="true" dataType="_Sk1BBBQvEe-iWZdHS4twTA" className="com.company.model.ConsumedRecords"/>
+              </leftOperand>
+              <rightOperand xmi:type="expression:Expression" xmi:id="_fVdmsj3wEe-DWY8YJtlaqA" name="newScript()" content="import org.apache.kafka.clients.consumer.ConsumerRecords&#xA;&#xA;import com.company.model.ConsumedRecords&#xA;&#xA;ConsumerRecords&lt;String, String> consumerRecords = (ConsumerRecords&lt;String,String>) kafkaResponse&#xA;&#xA;def ret=[]&#xA;consumerRecords.forEach { r ->&#xA;&#x9;ConsumedRecords record= new ConsumedRecords()&#xA;&#x9;record.recordKey=r.key&#xA;&#x9;record.recordValue=r.value&#xA;&#x9;record.topic=r.topic&#xA;&#xA;&#x9;ret.add(record)&#xA;}&#xA;&#xA;ret&#xA;" interpreter="GROOVY" type="TYPE_READ_ONLY_SCRIPT" returnType="java.util.List">
+                <referencedElements xmi:type="definition:Output" xmi:id="_fVdmsz3wEe-DWY8YJtlaqA" name="kafkaResponse" type="java.lang.Object"/>
+              </rightOperand>
+              <operator xmi:type="expression:Operator" xmi:id="_fVdmtD3wEe-DWY8YJtlaqA" type="ASSIGNMENT"/>
+            </outputs>
+          </connectors>
           <loopCondition xmi:type="expression:Expression" xmi:id="_Sk1A2xQvEe-iWZdHS4twTA" name="true" content="true" returnType="java.lang.Boolean" returnTypeFixed="true"/>
           <loopMaximum xmi:type="expression:Expression" xmi:id="_Sk1A3BQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Integer" returnTypeFixed="true"/>
           <cardinalityExpression xmi:type="expression:Expression" xmi:id="_Sk1A3RQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Integer" returnTypeFixed="true"/>
@@ -32,8 +73,8 @@
           <cardinalityExpression xmi:type="expression:Expression" xmi:id="_VnoDdhQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Integer" returnTypeFixed="true"/>
           <iteratorExpression xmi:type="expression:Expression" xmi:id="_VnoDeBQvEe-iWZdHS4twTA" name="multiInstanceIterator" content="multiInstanceIterator" type="MULTIINSTANCE_ITERATOR_TYPE" returnType="java.lang.Object" returnTypeFixed="true"/>
           <completionCondition xmi:type="expression:Expression" xmi:id="_VnoDdxQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Boolean" returnTypeFixed="true"/>
-          <formMapping xmi:type="process:FormMapping" xmi:id="_VnoDehQvEe-iWZdHS4twTA" type="NONE">
-            <targetForm xmi:type="expression:Expression" xmi:id="_VnoDexQvEe-iWZdHS4twTA" name="" content="" type="FORM_REFERENCE_TYPE" returnTypeFixed="true"/>
+          <formMapping xmi:type="process:FormMapping" xmi:id="_VnoDehQvEe-iWZdHS4twTA">
+            <targetForm xmi:type="expression:Expression" xmi:id="_kotB4D3wEe-DWY8YJtlaqA" name="reviewMessages" content="c6fbe233-9485-4b67-a939-3c7dad3f8e2d" type="FORM_REFERENCE_TYPE" returnTypeFixed="true"/>
           </formMapping>
           <contract xmi:type="process:Contract" xmi:id="_VnoDeRQvEe-iWZdHS4twTA"/>
           <expectedDuration xmi:type="expression:Expression" xmi:id="_VnoDfBQvEe-iWZdHS4twTA" name="" content="" returnType="java.lang.Long" returnTypeFixed="true"/>
@@ -84,13 +125,15 @@
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyUz0KEe-h977Dg1Udjw" id="ACTOR_FILTER"/>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyVD0KEe-h977Dg1Udjw" id="OTHER"/>
         <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyVT0KEe-h977Dg1Udjw" id="GROOVY_SCRIPT"/>
-        <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq0z0KEe-h977Dg1Udjw" name="bootstrapServer" value="test" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq0z0KEe-h977Dg1Udjw" name="kafkaServer" value="test" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq1D0KEe-h977Dg1Udjw" name="kafkaUser" value="test" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq1T0KEe-h977Dg1Udjw" name="kafkaPassword" value="test" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_VUQc4D3vEe-DWY8YJtlaqA" name="kafkaTimeout" value="10000" typeClassname="java.lang.Integer"/>
       </configurations>
-      <parameters xmi:type="parameter:Parameter" xmi:id="_7n5OMBQyEe-iWZdHS4twTA" name="bootstrapServer" typeClassname="java.lang.String"/>
+      <parameters xmi:type="parameter:Parameter" xmi:id="_7n5OMBQyEe-iWZdHS4twTA" name="kafkaServer" typeClassname="java.lang.String"/>
       <parameters xmi:type="parameter:Parameter" xmi:id="_8gPLcBQyEe-iWZdHS4twTA" name="kafkaUser" typeClassname="java.lang.String"/>
       <parameters xmi:type="parameter:Parameter" xmi:id="_9g1FwBQyEe-iWZdHS4twTA" name="kafkaPassword" typeClassname="java.lang.String"/>
+      <parameters xmi:type="parameter:Parameter" xmi:id="_VTzJ4D3vEe-DWY8YJtlaqA" name="kafkaTimeout" typeClassname="java.lang.Integer"/>
       <contract xmi:type="process:Contract" xmi:id="_Sk1A7BQvEe-iWZdHS4twTA">
         <inputs xmi:type="process:ContractInput" xmi:id="_rmwQYBQzEe-iWZdHS4twTA" name="consumeTopic">
           <mapping xmi:type="process:ContractInputMapping" xmi:id="_rmwQYRQzEe-iWZdHS4twTA"/>

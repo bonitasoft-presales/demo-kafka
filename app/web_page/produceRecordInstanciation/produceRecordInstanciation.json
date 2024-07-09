@@ -4,7 +4,7 @@
   "type" : "form",
   "uuid" : "6a883136-d9c2-423f-8a78-49047e205676",
   "modelVersion" : "2.6",
-  "lastUpdate" : 1715939835751,
+  "lastUpdate" : 1720527672550,
   "description" : "Page generated with Bonita UI designer",
   "rows" : [
     [
@@ -441,7 +441,7 @@
       "value" : [
         "{\r",
         "  \"recordInput\" : {\r",
-        "    \"topic\" : \"\",\r",
+        "    \"topic\" : \"bonita-topic\",\r",
         "    \"recordKey\" : \"\",\r",
         "    \"recordValue\" : \"\"\r",
         "  }\r",
