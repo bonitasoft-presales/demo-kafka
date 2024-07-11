@@ -185,7 +185,7 @@
         <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kdbEYj4DEe-DWY8YJtlaqA" id="GROOVY_SCRIPT"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEYz4DEe-DWY8YJtlaqA" name="kafkaUser" value="kafka" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZD4DEe-DWY8YJtlaqA" name="kafkaPassword" value="secret" typeClassname="java.lang.String"/>
-        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZT4DEe-DWY8YJtlaqA" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZT4DEe-DWY8YJtlaqA" name="kafkaServer" value="kafka:9092" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZj4DEe-DWY8YJtlaqA" name="kafkaUsername" value="secret" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kdbEZz4DEe-DWY8YJtlaqA" name="kafkaTimeout" value="10000" typeClassname="java.lang.Integer"/>
       </configurations>

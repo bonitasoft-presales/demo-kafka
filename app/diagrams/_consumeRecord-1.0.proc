@@ -120,12 +120,21 @@
             <users xmi:type="actormapping:Users" xmi:id="_FFkq0j0KEe-h977Dg1Udjw"/>
           </actorMapping>
         </actorMappings>
-        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyUT0KEe-h977Dg1Udjw" id="CONNECTOR"/>
+        <definitionMappings xmi:type="configuration:DefinitionMapping" xmi:id="_S_YSED9hEe-gQ7oLeu-AJQ" type="CONNECTOR" definitionId="connector-kafka-consumer" definitionVersion="1.0.0" implementationId="connector-kafka-consumer-impl" implementationVersion="1.6"/>
+        <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyUT0KEe-h977Dg1Udjw" id="CONNECTOR">
+          <children xmi:type="configuration:FragmentContainer" xmi:id="_S_4oYD9hEe-gQ7oLeu-AJQ" id="connector-kafka-consumer-impl-1.6">
+            <fragments xmi:type="configuration:Fragment" xmi:id="_S_4oYT9hEe-gQ7oLeu-AJQ" key="connector-kafka-consumer-impl -- 1.6" value="connector-kafka-1.6.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_S_5PcD9hEe-gQ7oLeu-AJQ" key="connector-kafka-consumer-impl -- 1.6" value="kafka-clients-3.7.1.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_S_52gD9hEe-gQ7oLeu-AJQ" key="connector-kafka-consumer-impl -- 1.6" value="lz4-java-1.8.0.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_S_6dkD9hEe-gQ7oLeu-AJQ" key="connector-kafka-consumer-impl -- 1.6" value="snappy-java-1.1.10.5.jar" type="CONNECTOR"/>
+            <fragments xmi:type="configuration:Fragment" xmi:id="_S_7EoD9hEe-gQ7oLeu-AJQ" key="connector-kafka-consumer-impl -- 1.6" value="zstd-jni-1.5.6-3.jar" type="CONNECTOR"/>
+          </children>
+        </processDependencies>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyUj0KEe-h977Dg1Udjw" id="GROOVY_SCRIPT"/>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyUz0KEe-h977Dg1Udjw" id="ACTOR_FILTER"/>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyVD0KEe-h977Dg1Udjw" id="OTHER"/>
         <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_FFfyVT0KEe-h977Dg1Udjw" id="GROOVY_SCRIPT"/>
-        <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq0z0KEe-h977Dg1Udjw" name="kafkaServer" value="test" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq0z0KEe-h977Dg1Udjw" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq1D0KEe-h977Dg1Udjw" name="kafkaUser" value="test" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_FFkq1T0KEe-h977Dg1Udjw" name="kafkaPassword" value="test" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_VUQc4D3vEe-DWY8YJtlaqA" name="kafkaTimeout" value="10000" typeClassname="java.lang.Integer"/>
@@ -155,7 +164,7 @@
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kcURID4DEe-DWY8YJtlaqA" id="ACTOR_FILTER"/>
         <processDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kcURIT4DEe-DWY8YJtlaqA" id="OTHER"/>
         <applicationDependencies xmi:type="configuration:FragmentContainer" xmi:id="_kcURIj4DEe-DWY8YJtlaqA" id="GROOVY_SCRIPT"/>
-        <parameters xmi:type="parameter:Parameter" xmi:id="_kcURIz4DEe-DWY8YJtlaqA" name="kafkaServer" value="localhost:29092" typeClassname="java.lang.String"/>
+        <parameters xmi:type="parameter:Parameter" xmi:id="_kcURIz4DEe-DWY8YJtlaqA" name="kafkaServer" value="kafka:9092" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kcURJD4DEe-DWY8YJtlaqA" name="kafkaUser" value="kafka" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kcURJT4DEe-DWY8YJtlaqA" name="kafkaPassword" value="secret" typeClassname="java.lang.String"/>
         <parameters xmi:type="parameter:Parameter" xmi:id="_kcURJj4DEe-DWY8YJtlaqA" name="kafkaTimeout" value="10000" typeClassname="java.lang.Integer"/>
