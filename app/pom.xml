@@ -92,6 +92,12 @@
       <artifactId>connector-kafka</artifactId>
       <version>1.6</version>
     </dependency>
+    <dependency>
+      <groupId>org.bonitasoft.web.application</groupId>
+      <artifactId>bonita-user-application</artifactId>
+      <type>zip</type>
+      <classifier>application</classifier>
+    </dependency>
     
     
     
